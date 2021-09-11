@@ -1,0 +1,20 @@
+{
+  "name": "excelparser",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^14.0.0",
+    "electron-packager": "^15.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "build": "electron-packager . --out=dist --asar --overwrite --all",
+    "build:win": "electron-packager . --out=dist --asar --overwrite --platform=win32 --arch=x64",
+    "build:darwin": "electron-packager . --out=dist --asar --overwrite --platform=darwin --arch=x64"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

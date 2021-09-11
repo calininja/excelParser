@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel to JSON Parser</title>
+</head>
+
+<body>
+    <input type="file" onchange="excelToJSON()">
+    <div>
+        <textarea cols="50" rows="20" style="resize: none;" class="result" onclick="onClick(this)"></textarea>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.5/xlsx.full.min.js"></script>
+    <script>
+        const onClick = (obj) => obj.select();
+
+        const excelToJSON = () => {
+            const input = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = () => {
+                const data = reader.result;
+                const excel = XLSX.read(data, { type: 'binary' });
+                excel.SheetNames.forEach(function (sheetName) {
+                    let rows = XLSX.utils.sheet_to_json(excel.Sheets[sheetName], { defval: '' });
+                    rows = rows.map((obj) => {
+                        obj['couponprice'] = obj['couponPrice'];
+                        obj['prdname'] = obj['prdName'];
+                        obj['coupon'] = String(Math.round(obj['coupon'] * 100)) + '%';
+                        obj['price'] = obj['price'].toLocaleString();
+                        obj['saleprice'] = obj['saleprice'].toLocaleString();
+                        obj['couponprice'] = obj['couponprice'].toLocaleString();
+                        delete obj['couponPrice'];
+                        delete obj['prdName'];
+                        return obj;
+                    })
+                    document.querySelector('.result').textContent = JSON.stringify(rows);
+                    new JsonDownload(rows).download();
+                })
+            };
+            reader.readAsBinaryString(input);
+        }
+
+        class JsonDownload {
+            constructor(data = {}) {
+                this.data = data;
+            }
+
+            download(type_of = "application/json", filename = "data.json") {
+                const body = document.body;
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(new Blob([JSON.stringify(this.data, null, 2)], {
+                    type: type_of
+                }));
+                a.setAttribute("download", filename);
+                body.appendChild(a);
+                a.click();
+                body.removeChild(a);
+            }
+        };
+    </script>
+</body>
+
+</html>
